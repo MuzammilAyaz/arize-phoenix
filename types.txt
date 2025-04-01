@@ -1,0 +1,19 @@
+required outputs:
+
+1. Objective - String
+
+2. skill - array of objects
+
+example:
+[
+    {
+        name : "React",
+        experience : "2 years"
+        topics  : ["functional components", "redux"]
+    },
+    {
+        name : "angular",
+        experience : "2 years"
+        topics  : ["functional components", "redux"]
+    }
+]
