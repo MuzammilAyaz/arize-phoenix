@@ -2,6 +2,9 @@
 services:
   phoenix:
     image: arizephoenix/phoenix:latest # Must be greater than 4.0 version to work
+    container_name : phoenix
+    networks:
+      - my_network
     depends_on:
       - db
     ports:
@@ -10,17 +13,61 @@ services:
       - 9090:9090  # [Optional] PROMETHEUS PORT IF ENABLED
     environment:
       - PHOENIX_SQL_DATABASE_URL=postgresql://postgres:postgres@db:5432/postgres
+  
   db:
     image: postgres
     restart: always
+    container_name : postgres
+    networks:
+      - my_network
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
     ports:
-      - 5432
+      - 5432:5432
     volumes:
       - database_data:/var/lib/postgresql/data
+  
+  
+  redis:
+    image: redis
+    container_name : redis
+    networks:
+      - my_network
+    ports:
+      - 6380:6379
+    
+  redis-commander:
+    image : rediscommander/redis-commander
+    container_name: redis-commander
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    networks:
+      - my_network
+    ports:
+      - 8081:8081
+    depends_on:
+      - redis
+
+  celery:
+    build : .
+    container_name : celery
+    networks:
+      - my_network
+    command : ["celery", "-A", "app.celery", "worker", "--loglevel=info", "--pool=threads"]
+
+  main:
+    build : .
+    container_name: main
+    networks:
+      - my_network
+    command: ["python", "main.py"]
+
 volumes:
   database_data:
     driver: local
+
+networks:
+  my_network:
+    driver : bridge

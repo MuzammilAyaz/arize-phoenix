@@ -37,4 +37,4 @@ metadata = {
 #     prompt_template_variables=prompt_template_variables,
 # ):
 with (using_metadata(metadata)):
-    print(azure_llm("meowowwwohahahhaass"))
+    print(azure_llm("upupupppp"))
